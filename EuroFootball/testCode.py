@@ -25,4 +25,4 @@ for index, row in trainset.iterrows():
     ag = row['away_team_goal']
     results[index] = resultEncoder(hg, ag)
 
-print trainset.apply(lambda x: sum(x.isnull()),axis=0) 
+print trainset.apply(lambda x: sum(x.isnull()), axis=0)
