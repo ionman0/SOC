@@ -4,13 +4,11 @@ import tensorflow as tf
 
 
 # Used to map results
-def resultEncoder(hg, ag):
-    if hg > ag:
-        return np.array([1, 0, 0])
-    elif ag > hg:
-        return np.array([0, 0, 1])
+def bsEncoder(hg, ag):
+    if hg + ag > 2.5:
+        return np.array([1, 0])
     else:
-        return np.array([0, 1, 0])
+        return np.array([0, 1])
 
 
 # Read datasets
@@ -23,26 +21,26 @@ trainset = trainset.dropna(1, 'any')
 testset = testset.drop(['season', 'id'], 1)
 trainset = trainset.drop(['season', 'id'], 1)
 
-trainResults = np.empty([2660, 3])
-testResults = np.empty([380, 3])
+trainResults = np.empty([2660, 2])
+testResults = np.empty([380, 2])
 
 # Map the results using resultEncoder
 for index, row in trainset.iterrows():
     hg = row['home_team_goal']
     ag = row['away_team_goal']
-    trainResults[index] = resultEncoder(hg, ag)
+    trainResults[index] = bsEncoder(hg, ag)
 
 for index, row in testset.iterrows():
     hg = row['home_team_goal']
     ag = row['away_team_goal']
-    testResults[index] = resultEncoder(hg, ag)
+    testResults[index] = bsEncoder(hg, ag)
 
 x = tf.placeholder(tf.float32, [None, 19])
-W = tf.Variable(tf.zeros([19, 3]))
-b = tf.Variable(tf.zeros(3))
+W = tf.Variable(tf.zeros([19, 2]))
+b = tf.Variable(tf.zeros(2))
 
 y = tf.matmul(x, W) + b
-y_ = tf.placeholder(tf.float32, [None, 3])
+y_ = tf.placeholder(tf.float32, [None, 2])
 
 cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(y, y_))
 
